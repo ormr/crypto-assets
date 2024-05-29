@@ -9,6 +9,7 @@
 
 	const { searchTerm$, filter, onKeyUp, onInput } =
 		getSearcher$Ctx() || Searcher$$({ accessAsset: (item: Asset) => item });
+
 	$: searchTerm = $searchTerm$;
 	$: filtered = searchTerm ? filter($selectedAssets) : $selectedAssets;
 </script>
@@ -20,7 +21,7 @@
 			<AssetItem {item} />
 		</VirtualList>
 	</div>
-	<button class="btn-1 fluid txt-center" on:click={() => showAssetsDialog()}>Edit assets</button>
+	<button class="btn-1 fluid txt-center" on:click={showAssetsDialog}>Edit assets</button>
 </div>
 
 <style>

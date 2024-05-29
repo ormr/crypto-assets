@@ -13,16 +13,18 @@
 	import CheckboxAsset from 'san-webkit/lib/ui/ListOfAssets/CheckboxAsset.svelte';
 	import type { Asset } from 'san-webkit/lib/ui/ListOfAssets/types';
 	import { getSearcher$Ctx, Searcher$$ } from 'san-webkit/lib/ui/ListOfAssets/search';
-	import { selectedAssets, assetsStore } from '$lib/stores';
+	import { selectedAssets, allAssets } from '$lib/stores';
 
 	export let DialogCtx;
 
+	let assets: Asset[];
+	let selected = new Set<Asset>();
+
 	const { searchTerm$, filter, onKeyUp, onInput, clear } =
 		getSearcher$Ctx() || Searcher$$({ accessAsset: (item: string) => item });
+
 	$: searchTerm = $searchTerm$;
 	$: filtered = searchTerm ? filter(assets) : assets;
-	$: selected = new Set<Asset>();
-	let assets: Asset[];
 
 	const onClick = (asset: Asset) => {
 		if (selected.has(asset)) {
@@ -40,12 +42,12 @@
 	};
 
 	onMount(() => {
-		assets = $assetsStore;
+		assets = $allAssets;
 		selected = new Set($selectedAssets);
 	});
 
 	onDestroy(() => {
-		clear === null || clear === void 0 ? void 0 : clear();
+		clear?.();
 	});
 </script>
 

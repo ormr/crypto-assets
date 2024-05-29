@@ -1,9 +1,9 @@
 import { queryAllProjects } from '$lib/api';
 
 export async function load() {
-	const data = await queryAllProjects();
+	const { allProjects } = await queryAllProjects();
 
 	return {
-		allProjects: data.allProjects
+		allProjects
 	};
 }

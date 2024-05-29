@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { assetsStore } from '$lib/stores';
+	import { allAssets } from '$lib/stores';
 	import 'san-webkit/lib/styles/main.css';
 	import SelectedAssets from '$lib/components/Assets/SelectedAssets.svelte';
 	export let data;
-	assetsStore.set(data.allProjects);
+	allAssets.set(data.allProjects);
 </script>
 
 <main>
