@@ -3,6 +3,4 @@
 </script>
 
 <Dialogs />
-<div id="app">
-	<slot />
-</div>
+<slot />

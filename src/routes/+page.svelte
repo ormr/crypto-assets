@@ -1,7 +1,9 @@
 <script lang="ts">
-	import AssetsButton from '$lib/components/Assets/AssetsButton.svelte';
+	import { assetsStore } from '$lib/assetsStore';
 	import 'san-webkit/lib/styles/main.css';
+	import SelectedAssets from '$lib/components/Assets/SelectedAssets.svelte';
 	export let data;
+	assetsStore.set(data.allProjects);
 </script>
 
-<AssetsButton />
+<SelectedAssets />
