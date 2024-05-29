@@ -10,4 +10,4 @@ const ALL_PROJECTS = `
     }
   }
 `;
-export const queryAllProjects = () => query<any>(ALL_PROJECTS);
+export const queryAllProjects = () => query(ALL_PROJECTS);

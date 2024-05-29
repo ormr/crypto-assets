@@ -13,39 +13,35 @@
 	import CheckboxAsset from 'san-webkit/lib/ui/ListOfAssets/CheckboxAsset.svelte';
 	import type { Asset } from 'san-webkit/lib/ui/ListOfAssets/types';
 	import { getSearcher$Ctx, Searcher$$ } from 'san-webkit/lib/ui/ListOfAssets/search';
-	import { selectedAssets } from './store';
-	import { assetsStore } from '$lib/assetsStore';
+	import { selectedAssets, assetsStore } from '$lib/stores';
 
-	export const onApply = (data: any) => data;
 	export let DialogCtx;
 
-	$: selected = new Set();
+	const { searchTerm$, filter, onKeyUp, onInput, clear } =
+		getSearcher$Ctx() || Searcher$$({ accessAsset: (item: string) => item });
+	$: searchTerm = $searchTerm$;
+	$: filtered = searchTerm ? filter(assets) : assets;
+	$: selected = new Set<Asset>();
+	let assets: Asset[];
 
-	const onClick = (name: string) => {
-		if (selected.has(name)) {
-			selected.delete(name);
+	const onClick = (asset: Asset) => {
+		if (selected.has(asset)) {
+			selected.delete(asset);
 		} else {
-			selected.add(name);
+			selected.add(asset);
 		}
 
 		selected = selected;
 	};
 
-	const { searchTerm$, filter, onKeyUp, onInput, clear } =
-		getSearcher$Ctx() || Searcher$$({ accessAsset: (_: string) => _ });
-	$: searchTerm = $searchTerm$;
-	$: filtered = searchTerm ? filter(assets) : assets;
-	let assets: Asset[];
-
 	const applySelectedValues = () => {
-		const selectedValues = assets.filter((item) => selected.has(item.name));
-		selectedAssets.set(selectedValues);
+		selectedAssets.set(Array.from(selected));
 		DialogCtx.close();
 	};
 
 	onMount(() => {
 		assets = $assetsStore;
-		selected = new Set($selectedAssets?.map((item) => item.name));
+		selected = new Set($selectedAssets);
 	});
 
 	onDestroy(() => {
@@ -54,36 +50,46 @@
 </script>
 
 <Dialog {...$$props} title="Select asset" class="$style.dialog">
-	<Search placeholder="Search for asset" on:input={onInput} on:keyup={onKeyUp} />
-	<main>
-		<VirtualList itemHeight={32} items={filtered} renderAmount={20} let:item>
-			<CheckboxAsset
-				{item}
-				isActive={selected.has(item.name)}
-				on:click={() => onClick(item.name)}
+	<div class="container">
+		<div>
+			<Search
+				class="mrg-l mrg--b"
+				placeholder="Search for asset"
+				on:input={onInput}
+				on:keyup={onKeyUp}
 			/>
-		</VirtualList>
-	</main>
-	<div>
-		<button class="btn-1 txt-center" on:click={applySelectedValues}>Apply changes</button>
-		<button class="btn-2 txt-center" on:click={DialogCtx.close}>Cancel</button>
+		</div>
+		<div class="assets-list mrg-l mrg--b">
+			<VirtualList itemHeight={32} items={filtered} renderAmount={20} let:item>
+				<CheckboxAsset {item} isActive={selected.has(item)} on:click={() => onClick(item)} />
+			</VirtualList>
+		</div>
+		<div class="row gap-m">
+			<button class="btn-1 txt-center" on:click={applySelectedValues}>Apply changes</button>
+			<button class="btn-2 txt-center" on:click={DialogCtx.close}>Cancel</button>
+		</div>
 	</div>
 </Dialog>
 
 <style>
 	.dialog {
-		width: 400px;
-		height: 455px;
-		max-width: 400px !important;
-		max-height: 455px !important;
+		max-width: 511px !important;
+		width: 100%;
+		height: 467px;
+	}
+
+	.container {
+		display: flex;
+		flex-direction: column;
+		padding: 13px 16px 16px 22px;
+		height: 100%;
 	}
 
 	.btn-2 {
 		--v-padding: 6px;
 	}
 
-	main {
-		padding: 8px 16px;
+	.assets-list {
 		flex: 1;
 	}
 </style>
